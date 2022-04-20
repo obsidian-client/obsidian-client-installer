@@ -1,0 +1,61 @@
+plugins {
+    id "java"
+    id "application"
+    id "maven-publish"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+group "com.obsidianclient.installer"
+version "1.0.0"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    compileJava.sourceCompatibility = JavaVersion.VERSION_1_8
+    compileJava.targetCompatibility = JavaVersion.VERSION_1_8
+    compileJava.options.encoding = "UTF-8"
+    archivesBaseName = project.name
+    mainClassName = "com.obsidianclient.installer.Main"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "com.fasterxml.woodstox:woodstox-core:6.2.8"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.13.2"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.13.2"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.2"
+}
+jar {
+    manifest {
+        attributes([
+            "Main-Class" : "$mainClassName" ,
+            "Specification-Title" : project.name ,
+            "Specification-Vendor" : "ObsidianClient" ,
+            "Specification-Version" : project.version ,
+            "Implementation-Title" : project.name ,
+            "Implementation-Version" : project.version ,
+            "Implementation-Vendor" : "ObsidianClient" ,
+            "Implementation-Timestamp" : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        ObsidianClientInstaller(MavenPublication) {
+            from components.java
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+}
