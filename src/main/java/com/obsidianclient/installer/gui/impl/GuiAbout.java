@@ -89,9 +89,9 @@ public class GuiAbout extends Gui {
 
     private String getAboutInformation() {
 
-        InputStream copyrightStream = this.getClass().getResourceAsStream(File.separator + "COPYRIGHT");
-        InputStream licenseStream = this.getClass().getResourceAsStream(File.separator + "LICENSE");
-        InputStream thirdPartyStream = this.getClass().getResourceAsStream(File.separator + "THIRD-PARTY");
+        InputStream copyrightStream = this.getClass().getResourceAsStream("/COPYRIGHT");
+        InputStream licenseStream = this.getClass().getResourceAsStream("/LICENSE");
+        InputStream thirdPartyStream = this.getClass().getResourceAsStream("/THIRD-PARTY");
         if (copyrightStream == null || licenseStream == null || thirdPartyStream == null) {
             System.err.println("[Obsidian Client - Installer] Can't read internal files 'COPYRIGHT', 'LICENSE', 'THIRD-PARTY': This installer is broken!");
             return "";
