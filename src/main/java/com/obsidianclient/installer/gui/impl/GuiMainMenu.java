@@ -39,8 +39,6 @@ public class GuiMainMenu extends Gui {
     @Override
     public Scene createGui() {
 
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiMainMenu");
-
         //The main container:
         HBox container = new HBox();
 
@@ -84,7 +82,7 @@ public class GuiMainMenu extends Gui {
         Button btn = new Button();
         btn.setText("Start Setup");
         btn.setOnAction(event -> {
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiChoosePlatform().createGui());
         });
         HBox btnBox = new HBox();
         btnBox.setAlignment(Pos.CENTER);
@@ -102,7 +100,7 @@ public class GuiMainMenu extends Gui {
         Pane infoBtnBox = new Pane();
         infoBtnBox.setCursor(Cursor.HAND);
         infoBtnBox.setOnMouseClicked(event -> {
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiAbout());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiAbout().createGui());
         });
         infoBtnBox.getChildren().add(infoBtn);
         rightContainer.getChildren().add(infoBtnBox);

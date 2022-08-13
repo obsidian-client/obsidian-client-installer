@@ -35,14 +35,11 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class GuiAbout extends Gui {
 
     @Override
     public Scene createGui() {
-
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiAbout");
 
         //The main container:
         VBox container = new VBox();
@@ -69,7 +66,7 @@ public class GuiAbout extends Gui {
         Button btn = new Button();
         btn.setText("Go Back");
         btn.setOnAction(event -> {
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiMainMenu());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiMainMenu().createGui());
         });
         container.getChildren().add(btn);
 
@@ -78,7 +75,7 @@ public class GuiAbout extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiMainMenu());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiMainMenu().createGui());
             }
         });
 

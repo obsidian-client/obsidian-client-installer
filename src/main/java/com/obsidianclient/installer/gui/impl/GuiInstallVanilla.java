@@ -20,8 +20,8 @@
 package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
-import com.obsidianclient.installer.gui.Gui;
 
+import com.obsidianclient.installer.gui.GuiInstall;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,15 +35,10 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 
-public class GuiInstallVanilla extends Gui {
-
-    public static String minecraftVersion;
-    public static String obsidianClientVersion;
+public class GuiInstallVanilla extends GuiInstall {
 
     @Override
-    public Scene createGui() {
-
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiInstallVanilla");
+    public Scene createGui(String minecraftVersion, String obsidianClientVersion) {
 
         //The main container:
         VBox container = new VBox();
@@ -94,8 +89,7 @@ public class GuiInstallVanilla extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                GuiChooseVersion.nextScene = Installer.getInstance().getGuiInstallVanilla();
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChooseVersion());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallVanilla()));
             }
         });
 

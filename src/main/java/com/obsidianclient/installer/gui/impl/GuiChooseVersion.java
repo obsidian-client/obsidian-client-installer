@@ -21,6 +21,7 @@ package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
 import com.obsidianclient.installer.gui.Gui;
+import com.obsidianclient.installer.gui.GuiNext;
 import com.obsidianclient.installer.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.SortedList;
@@ -37,18 +38,10 @@ import javafx.scene.text.TextAlignment;
 import java.io.IOException;
 import java.util.List;
 
-public class GuiChooseVersion extends Gui {
-
-    public static Scene nextScene;
-
-    public GuiChooseVersion() {
-
-    }
+public class GuiChooseVersion extends GuiNext {
 
     @Override
-    public Scene createGui() {
-
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiChooseVersion");
+    public Scene createGui(Gui nextGui) {
 
         //The main container:
         VBox container = new VBox();
@@ -108,16 +101,14 @@ public class GuiChooseVersion extends Gui {
 
             if (selectMcVersion.getValue() != null) {
                 if (selectOcVersion.getValue() != null) {
+                    String minecraftVersion = selectMcVersion.getValue();
+                    String obsidianClientVersion = selectOcVersion.getValue();
 
-                    if (nextScene.equals(Installer.getInstance().getGuiInstallForge())) {
-                        GuiInstallForge.minecraftVersion = selectMcVersion.getValue();
-                        GuiInstallForge.obsidianClientVersion = selectOcVersion.getValue();
-                        Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiInstallForge());
+                    if (nextGui instanceof GuiInstallForge) {
+                        Installer.getInstance().getPrimaryStage().setScene(((GuiInstallForge) nextGui).createGui(minecraftVersion, obsidianClientVersion));
 
-                    } else if (nextScene.equals(Installer.getInstance().getGuiInstallVanilla())) {
-                        GuiInstallVanilla.minecraftVersion = selectMcVersion.getValue();
-                        GuiInstallVanilla.obsidianClientVersion = selectOcVersion.getValue();
-                        Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiInstallVanilla());
+                    } else if (nextGui instanceof GuiInstallVanilla) {
+                        Installer.getInstance().getPrimaryStage().setScene(((GuiInstallVanilla) nextGui).createGui(minecraftVersion, obsidianClientVersion));
 
                     } else {
                         System.err.println("[Obsidian Client - Installer] Cannot open next gui, 'nextScene' variable has weird content!");
@@ -136,7 +127,7 @@ public class GuiChooseVersion extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiChoosePlatform().createGui());
             }
         });
 

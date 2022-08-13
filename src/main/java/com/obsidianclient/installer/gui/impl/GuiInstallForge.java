@@ -20,8 +20,8 @@
 package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
-import com.obsidianclient.installer.gui.Gui;
 
+import com.obsidianclient.installer.gui.GuiInstall;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,15 +31,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
-public class GuiInstallForge extends Gui {
-
-    public static String minecraftVersion;
-    public static String obsidianClientVersion;
+public class GuiInstallForge extends GuiInstall {
 
     @Override
-    public Scene createGui() {
-
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiInstallForge");
+    public Scene createGui(String minecraftVersion, String obsidianClientVersion) {
 
         //The main container:
         VBox container = new VBox();
@@ -65,8 +60,7 @@ public class GuiInstallForge extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                GuiChooseVersion.nextScene = Installer.getInstance().getGuiInstallForge();
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChooseVersion());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallForge()));
             }
         });
 

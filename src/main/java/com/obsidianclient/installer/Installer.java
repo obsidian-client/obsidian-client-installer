@@ -19,9 +19,8 @@
 
 package com.obsidianclient.installer;
 
-import com.obsidianclient.installer.gui.impl.*;
+import com.obsidianclient.installer.gui.impl.GuiMainMenu;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -43,14 +42,6 @@ public class Installer extends Application {
 
     private Stage primaryStage;
 
-    private Scene guiMainMenu;
-    private Scene guiAbout;
-    private Scene guiChoosePlatform;
-    private Scene guiChooseVersion;
-    private Scene guiInstallForge;
-    private Scene guiInstallLauncher;
-    private Scene guiInstallVanilla;
-
     /**
      * The main 'engine' for all the real installing stuff.
      */
@@ -62,30 +53,20 @@ public class Installer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
 
-        System.out.println("[Obsidian Client - Installer] Starting ... (Version: " + Installer.INSTALLER_VERSION + ")");
+        System.out.println("[Obsidian Client - Installer] Obsidian Client Installer, Version " + Installer.INSTALLER_VERSION);
 
         this.primaryStage = primaryStage;
 
         this.engine = new Engine();
 
-        this.guiMainMenu = new GuiMainMenu().createGui();
-        this.guiAbout = new GuiAbout().createGui();
-        this.guiChoosePlatform = new GuiChoosePlatform().createGui();
-        this.guiChooseVersion = new GuiChooseVersion().createGui();
-        this.guiInstallForge = new GuiInstallForge().createGui();
-        this.guiInstallLauncher = new GuiInstallLauncher().createGui();
-        this.guiInstallVanilla = new GuiInstallVanilla().createGui();
-
         primaryStage.setTitle("Obsidian Client Installer");
         primaryStage.getIcons().add(new Image(Installer.OBSIDIAN_CLIENT_LOGO_SMALL));
 
-        primaryStage.setScene(this.guiMainMenu);
+        primaryStage.setScene(new GuiMainMenu().createGui());
 
         primaryStage.show();
-
-        System.out.println("[Obsidian Client - Installer] Started successfully!");
 
     }
 
@@ -99,34 +80,6 @@ public class Installer extends Application {
 
     public Engine getEngine() {
         return engine;
-    }
-
-    public Scene getGuiMainMenu() {
-        return guiMainMenu;
-    }
-
-    public Scene getGuiAbout() {
-        return guiAbout;
-    }
-
-    public Scene getGuiChoosePlatform() {
-        return guiChoosePlatform;
-    }
-
-    public Scene getGuiChooseVersion() {
-        return guiChooseVersion;
-    }
-
-    public Scene getGuiInstallForge() {
-        return guiInstallForge;
-    }
-
-    public Scene getGuiInstallLauncher() {
-        return guiInstallLauncher;
-    }
-
-    public Scene getGuiInstallVanilla() {
-        return guiInstallVanilla;
     }
 
 }

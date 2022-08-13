@@ -27,20 +27,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class GuiChoosePlatform extends Gui {
 
     @Override
     public Scene createGui() {
-
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiChoosePlatform");
 
         //The main container:
         VBox container = new VBox();
@@ -66,8 +60,7 @@ public class GuiChoosePlatform extends Gui {
         forgeButton.setText(">>");
         forgeButton.setStyle("-fx-padding: 12px");
         forgeButton.setOnAction(event -> {
-            GuiChooseVersion.nextScene = Installer.getInstance().getGuiInstallForge();
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChooseVersion());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallForge()));
         });
         forgeBox.getChildren().add(forgeLabel);
         forgeBox.getChildren().add(forgeButton);
@@ -84,8 +77,7 @@ public class GuiChoosePlatform extends Gui {
         vanillaButton.setText(">>");
         vanillaButton.setStyle("-fx-padding: 12px");
         vanillaButton.setOnAction(event -> {
-            GuiChooseVersion.nextScene = Installer.getInstance().getGuiInstallVanilla();
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChooseVersion());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallVanilla()));
         });
         vanillaBox.getChildren().add(vanillaLabel);
         vanillaBox.getChildren().add(vanillaButton);
@@ -102,7 +94,7 @@ public class GuiChoosePlatform extends Gui {
         launcherButton.setText(">>");
         launcherButton.setStyle("-fx-padding: 12px");
         launcherButton.setOnAction(event -> {
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiInstallLauncher());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiInstallLauncher().createGui());
         });
         launcherButton.setDisable(true); //Temporally disabling the button!
         launcherBox.getChildren().add(launcherLabel);
@@ -115,7 +107,7 @@ public class GuiChoosePlatform extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiMainMenu());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiMainMenu().createGui());
             }
         });
 

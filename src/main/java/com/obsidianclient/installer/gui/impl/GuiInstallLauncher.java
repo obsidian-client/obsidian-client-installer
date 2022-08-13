@@ -36,8 +36,6 @@ public class GuiInstallLauncher extends Gui {
     @Override
     public Scene createGui() {
 
-        System.out.println("[Obsidian Client - Installer] Creating Scene: GuiInstallLauncher");
-
         //The main container:
         VBox container = new VBox();
         container.setAlignment(Pos.CENTER);
@@ -62,7 +60,7 @@ public class GuiInstallLauncher extends Gui {
         scene.getStylesheets().add(Installer.OBSIDIAN_CLIENT_STYLESHEET);
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.BACK_SPACE) {
-                Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
+                Installer.getInstance().getPrimaryStage().setScene(new GuiChoosePlatform().createGui());
             }
         });
 

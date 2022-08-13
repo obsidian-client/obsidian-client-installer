@@ -22,6 +22,7 @@ package com.obsidianclient.installer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.obsidianclient.installer.gui.impl.GuiChoosePlatform;
 import com.obsidianclient.installer.utils.*;
 import javafx.stage.FileChooser;
 
@@ -80,7 +81,7 @@ public class Engine {
             DialogUtils.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client for Minecraft Forge was installed successfully!\nYou can close the installer now or install Obsidian Client for another platform.");
 
             //Return to GuiChoosePlatform:
-            Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
+            Installer.getInstance().getPrimaryStage().setScene(new GuiChoosePlatform().createGui());
 
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't download file (" + forgeJarUrl + "):");
@@ -152,7 +153,7 @@ public class Engine {
 
         DialogUtils.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client was successfully installed for the standard Minecraft Launcher!\nYou can close the installer now or install Obsidian Client for another platform.");
         System.out.println("[Obsidian Client - Installer] Installed successfully!");
-        Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
+        Installer.getInstance().getPrimaryStage().setScene(new GuiChoosePlatform().createGui());
 
     }
 
