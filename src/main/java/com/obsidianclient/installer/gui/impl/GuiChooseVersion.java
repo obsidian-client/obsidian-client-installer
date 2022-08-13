@@ -21,7 +21,7 @@ package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
 import com.obsidianclient.installer.gui.Gui;
-import com.obsidianclient.installer.utils.DialogUtil;
+import com.obsidianclient.installer.utils.DialogUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
@@ -72,7 +72,7 @@ public class GuiChooseVersion extends Gui {
             sortedMcVersionsList = FXCollections.observableList(mcVersionsList).sorted();
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't download list of Obsidian Client versions!");
-            DialogUtil.showFailedDownloadMetadataDialog("https://archive.obsidian-client.com/com/obsidianclient/ObsidianClient/maven-metadata.xml");
+            DialogUtils.showFailedDownloadMetadataDialog("https://archive.obsidian-client.com/com/obsidianclient/ObsidianClient/maven-metadata.xml");
             e.printStackTrace();
             sortedMcVersionsList = null;
         }
@@ -86,7 +86,7 @@ public class GuiChooseVersion extends Gui {
                 newSortedOcVersionsList = FXCollections.observableList(newOcVersionsList).sorted();
             } catch (IOException e) {
                 System.err.println("[Obsidian Client - Installer] Can't download list of Obsidian Client versions!");
-                DialogUtil.showFailedDownloadMetadataDialog("https://archive.obsidian-client.com/com/obsidianclient/ObsidianClient/maven-metadata.xml");
+                DialogUtils.showFailedDownloadMetadataDialog("https://archive.obsidian-client.com/com/obsidianclient/ObsidianClient/maven-metadata.xml");
                 e.printStackTrace();
                 newSortedOcVersionsList = null;
             }
@@ -121,7 +121,7 @@ public class GuiChooseVersion extends Gui {
 
                     } else {
                         System.err.println("[Obsidian Client - Installer] Cannot open next gui, 'nextScene' variable has weird content!");
-                        DialogUtil.showInternalErrorDialog();
+                        DialogUtils.showInternalErrorDialog();
                     }
 
                 }

@@ -19,20 +19,20 @@
 
 package com.obsidianclient.installer.utils;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-/**
- * Utility class for handling Maven stuff.
- */
-public class MavenUtil {
+public class IOUtils {
 
-    public static MavenMetadata getArtifactMetadata(String repoUrl, String groupId, String artifactId) throws IOException {
-        URL url = new URL("https://" + repoUrl + "/" + groupId.replaceAll("\\.", "/") + "/" + artifactId + "/maven-metadata.xml");
-        XmlMapper mapper = new XmlMapper();
-        return mapper.readValue(url, MavenMetadata.class);
+    public static String convertStreamToString(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        for (int length; (length = inputStream.read(buffer)) != -1; ) {
+            outputStream.write(buffer, 0, length);
+        }
+        return outputStream.toString(StandardCharsets.UTF_8.name());
     }
 
 }

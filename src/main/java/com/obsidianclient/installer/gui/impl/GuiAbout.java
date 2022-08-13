@@ -21,6 +21,7 @@ package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
 import com.obsidianclient.installer.gui.Gui;
+import com.obsidianclient.installer.utils.IOUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -31,9 +32,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
-import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -99,11 +98,11 @@ public class GuiAbout extends Gui {
 
         try {
 
-            return IOUtils.toString(copyrightStream, StandardCharsets.UTF_8) +
+            return IOUtils.convertStreamToString(copyrightStream) +
                     "\n\n" +
-                    IOUtils.toString(licenseStream, StandardCharsets.UTF_8) +
+                    IOUtils.convertStreamToString(licenseStream) +
                     "\n\n" +
-                    IOUtils.toString(thirdPartyStream, StandardCharsets.UTF_8);
+                    IOUtils.convertStreamToString(thirdPartyStream);
 
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't read internal files 'COPYRIGHT', 'LICENSE', 'THIRD-PARTY': This installer is broken!");

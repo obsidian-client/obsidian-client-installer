@@ -29,7 +29,7 @@ import java.net.URL;
 /**
  * Utility class containing pre-made dialogs.
  */
-public class DialogUtil {
+public class DialogUtils {
 
     public static void showInstalledSuccessfullyDialog(String headerText, String contentText) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

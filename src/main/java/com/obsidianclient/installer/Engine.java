@@ -22,19 +22,14 @@ package com.obsidianclient.installer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.obsidianclient.installer.utils.DialogUtil;
-import com.obsidianclient.installer.utils.MavenMetadata;
-import com.obsidianclient.installer.utils.MavenUtil;
+import com.obsidianclient.installer.utils.*;
 import javafx.stage.FileChooser;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -67,7 +62,7 @@ public class Engine {
         if (file == null) {
             System.err.println("[Obsidian Client - Installer] User requested invalid file path!");
             System.err.println("[Obsidian Client - Installer] Installation failed!");
-            DialogUtil.showInvalidFilePathDialog();
+            DialogUtils.showInvalidFilePathDialog();
             return;
         }
 
@@ -82,7 +77,7 @@ public class Engine {
             FileUtils.copyURLToFile(forgeJarUrl, file);
 
             //Showing a message when it's done:
-            DialogUtil.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client for Minecraft Forge was installed successfully!\nYou can close the installer now or install Obsidian Client for another platform.");
+            DialogUtils.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client for Minecraft Forge was installed successfully!\nYou can close the installer now or install Obsidian Client for another platform.");
 
             //Return to GuiChoosePlatform:
             Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
@@ -90,7 +85,7 @@ public class Engine {
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't download file (" + forgeJarUrl + "):");
             System.err.println("[Obsidian Client - Installer] Installation failed!");
-            DialogUtil.showFailedDownloadDialog(forgeJarUrl);
+            DialogUtils.showFailedDownloadDialog(forgeJarUrl);
             e.printStackTrace();
             return;
         }
@@ -116,7 +111,7 @@ public class Engine {
         final String installDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(new Date());
 
         //Inform the user to close the Minecraft Launcher:
-        DialogUtil.showCloseMinecraftLauncherDialog();
+        DialogUtils.showCloseMinecraftLauncherDialog();
 
         //Downloading and saving the JSON file:
         try {
@@ -124,7 +119,7 @@ public class Engine {
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't download file (" + vanillaJsonUrl + "):");
             System.err.println("[Obsidian Client - Installer] Installation failed!");
-            DialogUtil.showFailedDownloadDialog(vanillaJsonUrl);
+            DialogUtils.showFailedDownloadDialog(vanillaJsonUrl);
             return;
         }
 
@@ -151,11 +146,11 @@ public class Engine {
 
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't modify file " + mcLauncherProfilesFile.getAbsolutePath() + ": The user has to create it's own Minecraft Launcher profile!");
-            DialogUtil.showCantAccessLauncherProfilesDialog();
+            DialogUtils.showCantAccessLauncherProfilesDialog();
             e.printStackTrace();
         }
 
-        DialogUtil.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client was successfully installed for the standard Minecraft Launcher!\nYou can close the installer now or install Obsidian Client for another platform.");
+        DialogUtils.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client was successfully installed for the standard Minecraft Launcher!\nYou can close the installer now or install Obsidian Client for another platform.");
         System.out.println("[Obsidian Client - Installer] Installed successfully!");
         Installer.getInstance().getPrimaryStage().setScene(Installer.getInstance().getGuiChoosePlatform());
 
@@ -172,7 +167,7 @@ public class Engine {
      * @return A list of the versions.
      */
     public List<String> getAllVersions() throws IOException {
-        MavenMetadata metadata = MavenUtil.getArtifactMetadata("archive.obsidian-client.com", "com.obsidianclient", "ObsidianClient");
+        MavenMetadata metadata = MavenUtils.getArtifactMetadata("archive.obsidian-client.com", "com.obsidianclient", "ObsidianClient");
         return metadata.versioning.versions.versionList;
     }
 
@@ -249,7 +244,7 @@ public class Engine {
         }
 
         try {
-            return "data:image/png;base64," + IOUtils.toString(stream, StandardCharsets.UTF_8);
+            return "data:image/png;base64," + IOUtils.convertStreamToString(stream);
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't read internal file 'ObsidianClientProfileIcon.txt': This installer is broken!");
             e.printStackTrace();

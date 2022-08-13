@@ -23,13 +23,13 @@ repositories {
 }
 
 dependencies {
-    implementation "commons-io:commons-io:2.11.0"
     implementation "com.fasterxml.woodstox:woodstox-core:6.2.8"
     implementation "com.fasterxml.jackson.core:jackson-core:2.13.2"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.13.2"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.2"
 }
+
 jar {
     manifest {
         attributes([
