@@ -58,7 +58,7 @@ public class GuiChoosePlatform extends Gui {
         forgeLabel.setText("... as a Forge Mod.");
         Button forgeButton = new Button();
         forgeButton.setText(">>");
-        forgeButton.setStyle("-fx-padding: 12px");
+        forgeButton.setStyle("-fx-padding: 12px 16px 12px 16px;");
         forgeButton.setOnAction(event -> {
             Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallForge()));
         });
@@ -75,7 +75,7 @@ public class GuiChoosePlatform extends Gui {
         vanillaLabel.setText("... for the standard Minecraft Launcher.");
         Button vanillaButton = new Button();
         vanillaButton.setText(">>");
-        vanillaButton.setStyle("-fx-padding: 12px");
+        vanillaButton.setStyle("-fx-padding: 12px 16px 12px 16px;");
         vanillaButton.setOnAction(event -> {
             Installer.getInstance().getPrimaryStage().setScene(new GuiChooseVersion().createGui(new GuiInstallVanilla()));
         });
@@ -92,7 +92,7 @@ public class GuiChoosePlatform extends Gui {
         launcherLabel.setText("... using the Obsidian Launcher.");
         Button launcherButton = new Button();
         launcherButton.setText(">>");
-        launcherButton.setStyle("-fx-padding: 12px");
+        launcherButton.setStyle("-fx-padding: 12px 16px 12px 16px;");
         launcherButton.setOnAction(event -> {
             Installer.getInstance().getPrimaryStage().setScene(new GuiInstallLauncher().createGui());
         });

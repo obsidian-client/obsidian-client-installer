@@ -149,6 +149,8 @@ dependencies {
     }
 }
 getTasks().getByName("dependencies").dependsOn("downloadJavaFX")
+getTasks().getByName("compileJava").dependsOn("downloadJavaFX")
+getTasks().getByName("prepareKotlinBuildScriptModel").dependsOn("downloadJavaFX")
 
 /**
  * Builds a tiny custom JRE for Linux, macOS and Windows

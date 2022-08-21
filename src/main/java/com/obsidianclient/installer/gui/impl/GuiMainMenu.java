@@ -21,7 +21,6 @@ package com.obsidianclient.installer.gui.impl;
 
 import com.obsidianclient.installer.Installer;
 import com.obsidianclient.installer.gui.Gui;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -30,8 +29,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 public class GuiMainMenu extends Gui {
@@ -61,8 +63,12 @@ public class GuiMainMenu extends Gui {
         HBox.setHgrow(middleContainer, Priority.ALWAYS);
 
         //The Obsidian Client Logo:
-        Image img = new Image(Installer.OBSIDIAN_CLIENT_LOGO, 385, 84, true, true);
+        Image img = new Image(Installer.OBSIDIAN_CLIENT_LOGO);
         ImageView logo = new ImageView(img);
+        logo.setPreserveRatio(true);
+        logo.setSmooth(true);
+        logo.setFitWidth(385);
+        logo.setFitHeight(84);
         HBox logoBox = new HBox();
         logoBox.setAlignment(Pos.CENTER);
         logoBox.getChildren().add(logo);
@@ -95,8 +101,12 @@ public class GuiMainMenu extends Gui {
         container.getChildren().add(rightContainer);
 
         //The "info" button:
-        Image infoImg = new Image("InfoOutlined.png", 40, 40, true, true);
+        Image infoImg = new Image("InfoFilled.png");
         ImageView infoBtn = new ImageView(infoImg);
+        infoBtn.setPreserveRatio(true);
+        infoBtn.setSmooth(true);
+        infoBtn.setFitWidth(40);
+        infoBtn.setFitHeight(40);
         Pane infoBtnBox = new Pane();
         infoBtnBox.setCursor(Cursor.HAND);
         infoBtnBox.setOnMouseClicked(event -> {

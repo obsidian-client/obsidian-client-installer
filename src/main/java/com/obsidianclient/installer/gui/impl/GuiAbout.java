@@ -48,8 +48,12 @@ public class GuiAbout extends Gui {
         container.setSpacing(30);
 
         //The Obsidian Client Logo:
-        Image img = new Image(Installer.OBSIDIAN_CLIENT_LOGO, 385, 84, true, true);
+        Image img = new Image(Installer.OBSIDIAN_CLIENT_LOGO);
         ImageView logo = new ImageView(img);
+        logo.setPreserveRatio(true);
+        logo.setSmooth(true);
+        logo.setFitWidth(385);
+        logo.setFitHeight(84);
         container.getChildren().add(logo);
 
         //The main content in the center:

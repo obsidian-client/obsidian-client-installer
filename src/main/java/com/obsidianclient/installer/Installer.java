@@ -22,6 +22,7 @@ package com.obsidianclient.installer;
 import com.obsidianclient.installer.gui.impl.GuiMainMenu;
 import javafx.application.Application;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Installer extends Application {
@@ -61,6 +62,7 @@ public class Installer extends Application {
 
         this.engine = new Engine();
 
+        Font.loadFont(getClass().getResourceAsStream("/MontserratMedium.woff"), 16.0);
         primaryStage.setTitle("Obsidian Client Installer");
         primaryStage.getIcons().add(new Image(Installer.OBSIDIAN_CLIENT_LOGO_SMALL));
 
