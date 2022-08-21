@@ -5,26 +5,23 @@ written in Java using the JavaFX library for the GUI.
 
 ## Build & Run
 
-To build the installer, run
+To build the installer, you just need to have a Java 17 JDK installed,
+then you can simply run `./gradlew make`.
 
-`./gradlew jar`
+This will build 3 native binaries (Linux x64, macOS x64 and Windows x64),
+containing the Java application and a minimal JRE.
 
-or for production purposes you should use this command instead
+You will find the created binaries in `build/make/`.
 
-`./gradlew shadowJar`.
-
-The output Java Archive will be in `build/libs/`.
-
-If you just want to run the installer, use
-
-`./gradlew run`.
+If you only want to run the installer,
+you can also simply run `./gradlew run`.
 
 All commands will automatically download the dependencies for you.
 
 ## Setup Development Environment
 
 ### IntelliJ Idea
-IntelliJ Idea supports Gradle natively, you can just import/open the `build.gradle` file.
+IntelliJ Idea supports Gradle out of the box, you can just import/open the `build.gradle` file.
 
 ### Eclipse
 Eclipse doesn't support Gradle out of the box, so you have to download the official Gradle plugin first:

@@ -1,61 +1,260 @@
+import org.gradle.internal.os.OperatingSystem
+import java.text.SimpleDateFormat
+
 plugins {
-    id "java"
-    id "application"
-    id "maven-publish"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id("java")
+    id("application")
+    id("org.beryx.jlink") version ("2.25.0")
+    id("de.undercouch.download") version("5.1.1")
 }
 
-group "com.obsidianclient.installer"
-version "1.0.0"
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    compileJava.sourceCompatibility = JavaVersion.VERSION_1_8
-    compileJava.targetCompatibility = JavaVersion.VERSION_1_8
-    compileJava.options.encoding = "UTF-8"
-    archivesBaseName = project.name
-    mainClassName = "com.obsidianclient.installer.Main"
-}
+setGroup("com.obsidianclient.installer")
+setVersion("1.0.0")
+setArchivesBaseName(project.name)
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation "com.fasterxml.woodstox:woodstox-core:6.2.8"
-    implementation "com.fasterxml.jackson.core:jackson-core:2.13.2"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:2.13.2"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.13.2.2"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.2"
+java {
+    getToolchain().getLanguageVersion().set(JavaLanguageVersion.of(17))
+}
+
+compileJava {
+    getOptions().setEncoding("UTF-8")
+}
+
+application {
+    getMainClass().set("com.obsidianclient.installer.Installer")
+    getMainModule().set("com.obsidianclient.installer")
+}
+
+processResources {
+    from("COPYRIGHT")
+    from("LICENSE")
+    from("THIRD-PARTY")
 }
 
 jar {
-    manifest {
-        attributes([
-            "Main-Class" : "$mainClassName" ,
-            "Specification-Title" : project.name ,
-            "Specification-Vendor" : "ObsidianClient" ,
-            "Specification-Version" : project.version ,
-            "Implementation-Title" : project.name ,
-            "Implementation-Version" : project.version ,
-            "Implementation-Vendor" : "ObsidianClient" ,
-            "Implementation-Timestamp" : new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
+    Attributes attributes = getManifest().getAttributes()
+    attributes.put("Main-Class", application.getMainClass())
+    attributes.put("ModuleMainClass", application.getMainClass())
+    attributes.put("Specification-Title", getProject().getName())
+    attributes.put("Specification-Vendor", "ObsidianClient")
+    attributes.put("Specification-Version", getProject().getVersion())
+    attributes.put("Implementation-Title", getProject().getName())
+    attributes.put("Implementation-Vendor", "ObsidianClient")
+    attributes.put("Implementation-Version", getProject().getVersion())
+    attributes.put("Implementation-Timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()))
 }
 
 task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
+    from(getSourceSets().getByName("main").getAllJava())
+    getArchiveClassifier().set("sources")
 }
 
-publishing {
-    publications {
-        ObsidianClientInstaller(MavenPublication) {
-            from components.java
-            artifact sourceJar {
-                classifier "sources"
+/**
+ * Downloads the warp-packer binary used for creating
+ * the native application wrappers.
+ */
+getTasks().register("downloadWrapper") {
+    doLast {
+        //Warp for Linux:
+        if (OperatingSystem.current() == OperatingSystem.LINUX) {
+            download.run {
+                src("https://github.com/dgiagio/warp/releases/download/v0.3.0/linux-x64.warp-packer")
+                dest(file("${buildDir.getAbsolutePath()}/warp/warp-packer"))
+                overwrite(false)
+                quiet(true)
+            }
+        }
+        //Warp for macOS:
+        if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+            download.run {
+                src("https://github.com/dgiagio/warp/releases/download/v0.3.0/macos-x64.warp-packer")
+                dest(file("${buildDir.getAbsolutePath()}/warp/warp-packer"))
+                overwrite(false)
+                quiet(true)
+            }
+        }
+        //Warp for Windows:
+        if (OperatingSystem.current() == OperatingSystem.WINDOWS) {
+            download.run {
+                src("https://github.com/dgiagio/warp/releases/download/v0.3.0/windows-x64.warp-packer.exe")
+                dest(file("${buildDir.getAbsolutePath()}/warp/warp-packer.exe"))
+                overwrite(false)
+                quiet(true)
             }
         }
     }
+}
+
+/**
+ * Downloads JavaFX and it's natives.
+ */
+getTasks().register("downloadJavaFX") {
+    doLast {
+        //JavaFX for Linux:
+        download.run {
+            src([
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-base/17.0.2/javafx-base-17.0.2-linux.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-controls/17.0.2/javafx-controls-17.0.2-linux.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-graphics/17.0.2/javafx-graphics-17.0.2-linux.jar"
+            ])
+            dest(file("${buildDir.getAbsolutePath()}/javafx/Linux-x64/"))
+            overwrite(false)
+            quiet(true)
+        }
+        //JavaFX for macOS:
+        download.run {
+            src([
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-base/17.0.2/javafx-base-17.0.2-mac.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-controls/17.0.2/javafx-controls-17.0.2-mac.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-graphics/17.0.2/javafx-graphics-17.0.2-mac.jar"
+            ])
+            dest(file("${buildDir.getAbsolutePath()}/javafx/MacOS-x64/"))
+            overwrite(false)
+            quiet(true)
+        }
+        //JavaFX for Windows:
+        download.run {
+            src([
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-base/17.0.2/javafx-base-17.0.2-win.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-controls/17.0.2/javafx-controls-17.0.2-win.jar",
+                    "https://repo1.maven.org/maven2/org/openjfx/javafx-graphics/17.0.2/javafx-graphics-17.0.2-win.jar"
+            ])
+            dest(file("${buildDir.getAbsolutePath()}/javafx/Windows-x64/"))
+            overwrite(false)
+            quiet(true)
+        }
+    }
+}
+
+/**
+ * Provides all dependencies, required to build this application.
+ */
+dependencies {
+    //Newer versions won't work, because of broken module-info file!
+    implementation("org.glassfish:jakarta.json:1.1.6")
+
+    //JavaFX:
+    if (OperatingSystem.current() == OperatingSystem.LINUX) {
+        runtimeOnly(compileOnly(fileTree("${buildDir.getAbsolutePath()}/javafx/Linux-x64/")))
+    }
+    if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+        runtimeOnly(compileOnly(fileTree("${buildDir.getAbsolutePath()}/javafx/MacOS-x64/")))
+    }
+    if (OperatingSystem.current() == OperatingSystem.WINDOWS) {
+        runtimeOnly(compileOnly(fileTree("${buildDir.getAbsolutePath()}/javafx/Windows-x64/")))
+    }
+}
+getTasks().getByName("dependencies").dependsOn("downloadJavaFX")
+
+/**
+ * Builds a tiny custom JRE for Linux, macOS and Windows
+ * with just enough modules to run this application.
+ * This JRE is included in the native application packages.
+ */
+jlink {
+    getOptions().set(Arrays.asList("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
+    getImageDir().set(file("${buildDir.getAbsolutePath()}/jre/"))
+    getConfigurations().getByName("implementation").setCanBeResolved(true)
+    getConfiguration().set("implementation")
+    //Hide console window on Windows:
+    launcher {
+        setNoConsole(true)
+    }
+    //JRE image for Linux:
+    targetPlatform("Linux-x64") {
+        setJdkHome(jdkDownload("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4+8/OpenJDK17U-jdk_x64_linux_hotspot_17.0.4_8.tar.gz") {
+            downloadDir = "${buildDir.getAbsolutePath()}/jdk/Linux-x64/"
+            archiveName = "jdk-17.0.4+8"
+        })
+        addExtraModulePath("${buildDir.getAbsolutePath()}/javafx/Linux-x64/")
+    }
+    //JRE image for macOS:
+    targetPlatform("MacOS-x64") {
+        setJdkHome(jdkDownload("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4+8/OpenJDK17U-jdk_x64_mac_hotspot_17.0.4_8.tar.gz") {
+            downloadDir = "${buildDir.getAbsolutePath()}/jdk/MacOS-x64/"
+            archiveName = "jdk-17.0.4+8"
+        })
+        addExtraModulePath("${buildDir.getAbsolutePath()}/javafx/MacOS-x64/")
+    }
+    //JRE image for Windows:
+    targetPlatform("Windows-x64") {
+        setJdkHome(jdkDownload("https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4+8/OpenJDK17U-jdk_x64_windows_hotspot_17.0.4_8.zip") {
+            downloadDir = "${buildDir.getAbsolutePath()}/jdk/Windows-x64/"
+            archiveName = "jdk-17.0.4+8"
+        })
+        addExtraModulePath("${buildDir.getAbsolutePath()}/javafx/Windows-x64/")
+    }
+}
+getTasks().getByName("jlink").dependsOn("downloadJavaFX")
+
+/**
+ * Builds native binaries for Linux, macOS and Windows.
+ * The output will be in "$buildDir/make/".
+ */
+getTasks().register("make") {
+    doLast {
+        String cmd = null
+        if (OperatingSystem.current() == OperatingSystem.LINUX) {
+            cmd = "${buildDir.getAbsolutePath()}/warp/warp-packer"
+        }
+        if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
+            cmd = "${buildDir.getAbsolutePath()}/warp/warp-packer"
+        }
+        if (OperatingSystem.current() == OperatingSystem.WINDOWS) {
+            cmd = "${buildDir.getAbsolutePath()}/warp/warp-packer.exe" //cmd /c 
+        }
+        //Build Linux binary:
+        exec {
+            File outputFileLinux = file("${buildDir.getAbsolutePath()}/make/ObsidianClientInstaller-$version-Linux-x64")
+            if (!outputFileLinux.getParentFile().exists()) {
+                outputFileLinux.getParentFile().mkdirs()
+            }
+            setWorkingDir("${buildDir.getAbsolutePath()}/warp/")
+            setCommandLine(cmd)
+            setStandardOutput(new ByteArrayOutputStream())
+            args(
+                    "--arch", "linux-x64",
+                    "--input_dir", "${buildDir.getAbsolutePath()}/jre/ObsidianClientInstaller-Linux-x64/",
+                    "--exec", "bin/ObsidianClientInstaller",
+                    "--output", outputFileLinux.getAbsolutePath()
+            )
+        }
+        //Build macOS binary:
+        exec {
+            File outputFileMacOS = file("${buildDir.getAbsolutePath()}/make/ObsidianClientInstaller-$version-MacOS-x64")
+            if (!outputFileMacOS.getParentFile().exists()) {
+                outputFileMacOS.getParentFile().mkdirs()
+            }
+            setWorkingDir("${buildDir.getAbsolutePath()}/warp/")
+            setCommandLine(cmd)
+            setStandardOutput(new ByteArrayOutputStream())
+            args(
+                    "--arch", "macos-x64",
+                    "--input_dir", "${buildDir.getAbsolutePath()}/jre/ObsidianClientInstaller-MacOS-x64/",
+                    "--exec", "bin/ObsidianClientInstaller",
+                    "--output", outputFileMacOS.getAbsolutePath()
+            )
+        }
+        //Build Windows binary:
+        exec {
+            File outputFileWindows = file("${buildDir.getAbsolutePath()}/make/ObsidianClientInstaller-$version-Windows-x64.exe")
+            if (!outputFileWindows.getParentFile().exists()) {
+                outputFileWindows.getParentFile().mkdirs()
+            }
+            setWorkingDir("${buildDir.getAbsolutePath()}/warp/")
+            setCommandLine(cmd)
+            setStandardOutput(new ByteArrayOutputStream())
+            args(
+                    "--arch", "windows-x64",
+                    "--input_dir", "${buildDir.getAbsolutePath()}/jre/ObsidianClientInstaller-Windows-x64/",
+                    "--exec", "bin/ObsidianClientInstaller.bat",
+                    "--output", outputFileWindows.getAbsolutePath()
+            )
+        }
+    }
+    getTasks().getByName("make").dependsOn("jlink", "downloadWrapper")
 }

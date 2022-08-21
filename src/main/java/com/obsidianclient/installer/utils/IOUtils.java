@@ -20,11 +20,25 @@
 package com.obsidianclient.installer.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 public class IOUtils {
+
+    public static void copyURLToFile(URL url, File file) throws IOException {
+        InputStream inputStream = url.openStream();
+        FileOutputStream outputStream = new FileOutputStream(file);
+        ReadableByteChannel inputChannel = Channels.newChannel(inputStream);
+        FileChannel outputChannel = outputStream.getChannel();
+        outputChannel.transferFrom(inputChannel, 0, Long.MAX_VALUE);
+    }
 
     public static String convertStreamToString(InputStream inputStream) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

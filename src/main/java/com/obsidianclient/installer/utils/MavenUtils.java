@@ -19,20 +19,88 @@
 
 package com.obsidianclient.installer.utils;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for handling Maven stuff.
  */
 public class MavenUtils {
 
-    public static MavenMetadata getArtifactMetadata(String repoUrl, String groupId, String artifactId) throws IOException {
+    public static MavenMetadata getArtifactMetadata(String repoUrl, String groupId, String artifactId) throws IOException, ParserConfigurationException, SAXException {
         URL url = new URL("https://" + repoUrl + "/" + groupId.replaceAll("\\.", "/") + "/" + artifactId + "/maven-metadata.xml");
-        XmlMapper mapper = new XmlMapper();
-        return mapper.readValue(url, MavenMetadata.class);
+        InputStream stream = url.openStream();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(stream);
+
+        List<String> versions = new ArrayList<>();
+        NodeList rawVersions = doc.getElementsByTagName("version");
+        for (int i = 0; i < rawVersions.getLength(); i++) {
+            Node current = rawVersions.item(i);
+            versions.add(current.getTextContent());
+        }
+
+        return new MavenMetadata(
+            doc.getElementsByTagName("groupId").item(0).getTextContent(),
+            doc.getElementsByTagName("artifactId").item(0).getTextContent(),
+            new MavenMetadata.VersionMetadata(
+                    doc.getElementsByTagName("latest").item(0).getTextContent(),
+                    doc.getElementsByTagName("release").item(0).getTextContent(),
+                    doc.getElementsByTagName("lastUpdated").item(0).getTextContent(),
+                    versions
+            )
+        );
+    }
+
+    public static class MavenMetadata {
+
+        private final String groupId;
+        private final String artifactId;
+        private final VersionMetadata versioning;
+
+        public MavenMetadata(String groupId, String artifactId, VersionMetadata versioning) {
+            this.groupId = groupId;
+            this.artifactId = artifactId;
+            this.versioning = versioning;
+        }
+
+        public String getGroupId() { return groupId; }
+        public String getArtifactId() { return artifactId; }
+        public VersionMetadata getVersioning() { return versioning; }
+
+        public static class VersionMetadata {
+
+            private final String latest;
+            private final String release;
+            private final String lastUpdated;
+            private final List<String> versions;
+
+            public VersionMetadata(String latest, String release, String lastUpdated, List<String> versions) {
+                this.latest = latest;
+                this.release = release;
+                this.lastUpdated = lastUpdated;
+                this.versions = versions;
+            }
+
+            public String getLatest() { return latest; }
+            public String getRelease() { return release; }
+            public String getLastUpdated() { return lastUpdated; }
+            public List<String> getVersions() { return versions; }
+
+        }
+
     }
 
 }

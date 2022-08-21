@@ -17,14 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.obsidianclient.installer;
+module com.obsidianclient.installer {
+    requires javafx.controls;
+    requires jdk.crypto.ec;
+    requires java.base;
+    requires java.json;
+    requires java.xml;
 
-import javafx.application.Application;
-
-public class Main {
-
-    public static void main(String[] args) {
-        Application.launch(Installer.class, args);
-    }
-
+    exports com.obsidianclient.installer;
 }

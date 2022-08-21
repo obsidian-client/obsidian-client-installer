@@ -19,21 +19,29 @@
 
 package com.obsidianclient.installer;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.obsidianclient.installer.gui.impl.GuiChoosePlatform;
-import com.obsidianclient.installer.utils.*;
+import com.obsidianclient.installer.utils.DialogUtils;
+import com.obsidianclient.installer.utils.IOUtils;
+import com.obsidianclient.installer.utils.MavenUtils;
 import javafx.stage.FileChooser;
+import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The main 'engine' for all the real installing stuff.
@@ -75,7 +83,7 @@ public class Engine {
         try {
 
             //Downloading:
-            FileUtils.copyURLToFile(forgeJarUrl, file);
+            IOUtils.copyURLToFile(forgeJarUrl, file);
 
             //Showing a message when it's done:
             DialogUtils.showInstalledSuccessfullyDialog("Installed successfully!", "Obsidian Client for Minecraft Forge was installed successfully!\nYou can close the installer now or install Obsidian Client for another platform.");
@@ -116,7 +124,7 @@ public class Engine {
 
         //Downloading and saving the JSON file:
         try {
-            FileUtils.copyURLToFile(vanillaJsonUrl, new File(mcVersionsFolder, "ObsidianClient-" + obsidianClientVersion + File.separator + new File(vanillaJsonUrl.getFile()).getName()));
+            IOUtils.copyURLToFile(vanillaJsonUrl, new File(mcVersionsFolder, "ObsidianClient-" + obsidianClientVersion + File.separator + new File(vanillaJsonUrl.getFile()).getName()));
         } catch (IOException e) {
             System.err.println("[Obsidian Client - Installer] Can't download file (" + vanillaJsonUrl + "):");
             System.err.println("[Obsidian Client - Installer] Installation failed!");
@@ -125,27 +133,40 @@ public class Engine {
         }
 
         //Creating a profile entry in the Minecraft launcher:
-        ObjectMapper mapper = new ObjectMapper();
-
-        //Creating the new profile:
-        ObjectNode profileEntry = mapper.createObjectNode();
-        profileEntry.put("name", "Obsidian Client");
-        profileEntry.put("type", "custom");
-        profileEntry.put("created", installDate);
-        profileEntry.put("lastUsed", installDate);
-        profileEntry.put("icon", vanillaProfileIcon);
-        profileEntry.put("lastVersionId", "ObsidianClient-" + obsidianClientVersion);
-
         try {
+            FileInputStream jsonStreamIn = new FileInputStream(mcLauncherProfilesFile);
+            JsonReader jsonReader = Json.createReader(jsonStreamIn);
+            JsonObject json = jsonReader.readObject();
+            JsonObject profilesJson = json.getJsonObject("profiles");
 
-            //Putting the new profile into the file:
-            JsonNode json = mapper.readTree(mcLauncherProfilesFile);
-            ((ObjectNode) json.get("profiles")).set("ObsidianClient", profileEntry);
+            //Creating the new profile:
+            JsonObjectBuilder profileEntryBuilder = Json.createObjectBuilder();
+            profileEntryBuilder.add("name", "Obsidian Client");
+            profileEntryBuilder.add("type", "custom");
+            profileEntryBuilder.add("created", installDate);
+            profileEntryBuilder.add("lastUsed", installDate);
+            profileEntryBuilder.add("icon", vanillaProfileIcon);
+            profileEntryBuilder.add("lastVersionId", "ObsidianClient-" + obsidianClientVersion);
+            JsonObject profileEntry = profileEntryBuilder.build();
 
-            //Writing the file:
-            mapper.writerWithDefaultPrettyPrinter().writeValue(mcLauncherProfilesFile, json);
+            //Putting it into the profiles list:
+            JsonObjectBuilder profilesListBuilder = Json.createObjectBuilder(profilesJson);
+            profilesListBuilder.add("ObsidianClient", profileEntry);
+            JsonObject profilesList = profilesListBuilder.build();
 
-        } catch (IOException e) {
+            //Putting the profiles list into the json file:
+            JsonObjectBuilder mainBuilder = Json.createObjectBuilder(json);
+            mainBuilder.add("profiles", profilesList);
+            JsonObject newJson = mainBuilder.build();
+
+            FileOutputStream jsonStreamOut = new FileOutputStream(mcLauncherProfilesFile);
+            Map<String, Boolean> config = new HashMap<>();
+            config.put(JsonGenerator.PRETTY_PRINTING, true);
+            JsonWriterFactory jsonWriterFactory = Json.createWriterFactory(config);
+            JsonWriter jsonWriter = jsonWriterFactory.createWriter(jsonStreamOut);
+            jsonWriter.writeObject(newJson);
+
+        } catch (FileNotFoundException e) {
             System.err.println("[Obsidian Client - Installer] Can't modify file " + mcLauncherProfilesFile.getAbsolutePath() + ": The user has to create it's own Minecraft Launcher profile!");
             DialogUtils.showCantAccessLauncherProfilesDialog();
             e.printStackTrace();
@@ -164,12 +185,16 @@ public class Engine {
     /**
      * Gets all available versions of Obsidian Client.
      * The version numbers are returned unmodified.
-     * Example: 1.8.9-1.0.0 -- Obsidian Client 1.0.0 for Minecraft 1.8.9
+     * Example: 1.8.9-1.0.0 --> Obsidian Client 1.0.0 for Minecraft 1.8.9
      * @return A list of the versions.
      */
     public List<String> getAllVersions() throws IOException {
-        MavenMetadata metadata = MavenUtils.getArtifactMetadata("archive.obsidian-client.com", "com.obsidianclient", "ObsidianClient");
-        return metadata.versioning.versions.versionList;
+        try {
+            MavenUtils.MavenMetadata metadata = MavenUtils.getArtifactMetadata("archive.obsidian-client.com", "com.obsidianclient", "ObsidianClient");
+            return metadata.getVersioning().getVersions();
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new IOException("Can't download the Obsidian Client version information file!", e);
+        }
     }
 
     /**
