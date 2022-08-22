@@ -32,7 +32,7 @@ public class Installer extends Application {
      */
     private static Installer instance;
 
-    public static final String INSTALLER_VERSION = "1.0.0";
+    public static final String INSTALLER_VERSION = "1.1.0";
 
     public static final int WINDOW_WIDTH = 800;
     public static final int WINDOW_HEIGHT = 480;

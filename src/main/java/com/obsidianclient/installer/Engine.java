@@ -263,7 +263,7 @@ public class Engine {
      */
     public String getVanillaProfileIcon() {
 
-        InputStream stream = this.getClass().getResourceAsStream(File.separator + "ObsidianClientProfileIcon.txt");
+        InputStream stream = this.getClass().getResourceAsStream("/ObsidianClientProfileIcon.txt");
         if (stream == null) {
             System.err.println("[Obsidian Client - Installer] Can't find internal file 'ObsidianClientProfileIcon.txt': This installer is broken!");
             return "";

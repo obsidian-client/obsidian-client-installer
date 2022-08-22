@@ -27,11 +27,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +57,13 @@ public class GuiAbout extends Gui {
         logo.setFitWidth(385);
         logo.setFitHeight(84);
         container.getChildren().add(logo);
+
+        //The installer version:
+        Label label = new Label();
+        label.setText("Version " + Installer.INSTALLER_VERSION);
+        label.setTextAlignment(TextAlignment.CENTER);
+        label.setPadding(new Insets(-15));
+        container.getChildren().add(label);
 
         //The main content in the center:
         TextArea txtArea = new TextArea();

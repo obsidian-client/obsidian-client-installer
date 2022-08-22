@@ -33,6 +33,11 @@ import java.nio.charset.StandardCharsets;
 public class IOUtils {
 
     public static void copyURLToFile(URL url, File file) throws IOException {
+        if (!file.getParentFile().exists()) {
+            if (!file.getParentFile().mkdirs()) {
+                throw new IOException("Can't create parent directories for file '" + file.getAbsolutePath() + "'!");
+            }
+        }
         InputStream inputStream = url.openStream();
         FileOutputStream outputStream = new FileOutputStream(file);
         ReadableByteChannel inputChannel = Channels.newChannel(inputStream);
